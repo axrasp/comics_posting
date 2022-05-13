@@ -91,13 +91,6 @@ def save_image_local(url: str, folder: str, filename: str):
         return f'{folder}/{filename}.png'
 
 
-def delete_image(image_path):
-    try:
-        os.remove(image_path)
-    except OSError as e:
-        print("Error: %s - %s." % (e.filename, e.strerror))
-
-
 def main():
     load_dotenv()
     comics_number = random.randint(1, 500)
@@ -146,7 +139,7 @@ def main():
                             message=comics_text)
     except requests.exceptions.HTTPError as e:
         print(e)
-    delete_image(comics_image_path)
+    os.remove(comics_image_path)
 
 
 if __name__ == '__main__':
