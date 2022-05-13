@@ -114,29 +114,38 @@ def main():
     try:
         comics = get_comics(comics_number=comics_number)
         comics_text = comics['alt']
-        comics_image_path = save_image_local(url=comics['img'],
-                                             folder=img_folder,
-                                             filename=get_comics(comics_number=comics_number)['safe_title'])
+        comics_image_path = save_image_local(
+            url=comics['img'],
+            folder=img_folder,
+            filename=get_comics(
+                comics_number=comics_number)['safe_title'])
     except requests.exceptions.HTTPError as e:
         print(e)
         print('Комикс не найден')
     try:
         upload_url = get_upload_url(token=access_token, group_id=group_id,
                                     v=v,
-                                    method_name='photos.getWallUploadServer')
-        photo_upload_params = send_image(url=upload_url, image=comics_image_path)
-        photo_uploaded = save_image_to_group(token=access_token,
-                                             group_id=group_id,
-                                             v=v,
-                                             method_name='photos.saveWallPhoto',
-                                             photo_hash=photo_upload_params['hash'],
-                                             server=photo_upload_params['server'],
-                                             photo=photo_upload_params['photo'])
+                                    method_name='photos.getWallUploadServer'
+                                    )
+        photo_upload_params = send_image(
+            url=upload_url,
+            image=comics_image_path
+        )
+        photo_uploaded = save_image_to_group(
+            token=access_token,
+            group_id=group_id,
+            v=v,
+            method_name='photos.saveWallPhoto',
+            photo_hash=photo_upload_params['hash'],
+            server=photo_upload_params['server'],
+            photo=photo_upload_params['photo']
+        )
         post_image_to_group(token=access_token, group_id=group_id, v=v,
                             method_name='wall.post',
                             photo_id=photo_uploaded['response'][0]['id'],
                             owner_id=photo_uploaded['response'][0]['owner_id'],
-                            message=comics_text)
+                            message=comics_text
+                            )
     except requests.exceptions.HTTPError as e:
         print(e)
     os.remove(comics_image_path)
