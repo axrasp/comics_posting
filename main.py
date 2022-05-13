@@ -16,7 +16,7 @@ def get_comics(comics_number: int):
     return comics
 
 
-def implict_token(id: int, v: float):
+def get_implicit_token(id: int, v: float):
     url = f'https://oauth.vk.com/authorize?client_id={id}' \
           f'&display=page&scope=photos,groups,wall,offline' \
           f'&response_type=token&v={v}'
@@ -113,7 +113,7 @@ def main():
     args = parser.parse_args()
     if args.token == 'token':
         try:
-            implict_token(id=int(client_id), v=float(v))
+            get_implicit_token(id=int(client_id), v=float(v))
             sys.exit()
         except requests.exceptions.HTTPError as e:
             print(e)
