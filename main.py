@@ -16,8 +16,8 @@ def get_comics(comics_number: int):
     return comics
 
 
-def get_implicit_token(id: int, v: float):
-    url = f'https://oauth.vk.com/authorize?client_id={id}' \
+def get_implicit_token(client_id: int, v: float):
+    url = f'https://oauth.vk.com/authorize?client_id={client_id}' \
           f'&display=page&scope=photos,groups,wall,offline' \
           f'&response_type=token&v={v}'
     response = requests.get(url)
@@ -51,12 +51,12 @@ def send_image(url: str, image: str):
 
 
 def save_image_to_group(token: str, group_id: int,
-                        method_name: str, hash: str,
+                        method_name: str, photo_hash: str,
                         photo: list, server: int, v: float):
     params = {
         'group_id': group_id,
         'photo': photo,
-        'hash': hash,
+        'hash': photo_hash,
         'server': server,
         'access_token': token,
         'v': v
@@ -113,7 +113,7 @@ def main():
     args = parser.parse_args()
     if args.token == 'token':
         try:
-            get_implicit_token(id=int(client_id), v=float(v))
+            get_implicit_token(client_id=int(client_id), v=float(v))
             sys.exit()
         except requests.exceptions.HTTPError as e:
             print(e)
@@ -123,7 +123,7 @@ def main():
         comics_text = comics['alt']
         comics_image_path = save_image_local(url=comics['img'],
                                              folder=img_folder,
-                                             filename=get_comics()['safe_title'])
+                                             filename=get_comics(comics_number=comics_number)['safe_title'])
     except requests.exceptions.HTTPError as e:
         print(e)
         print('Комикс не найден')
@@ -136,7 +136,7 @@ def main():
                                              group_id=group_id,
                                              v=v,
                                              method_name='photos.saveWallPhoto',
-                                             hash=photo_upload_params['hash'],
+                                             photo_hash=photo_upload_params['hash'],
                                              server=photo_upload_params['server'],
                                              photo=photo_upload_params['photo'])
         post_image_to_group(token=access_token, group_id=group_id, v=v,
