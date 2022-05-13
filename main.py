@@ -8,8 +8,7 @@ import requests
 from dotenv import load_dotenv
 
 
-def get_comics():
-    comics_number = random.randint(1, 500)
+def get_comics(comics_number: int):
     url = f'https://xkcd.com/{comics_number}/info.0.json'
     response = requests.get(url)
     response.raise_for_status()
@@ -101,6 +100,7 @@ def delete_image(image_path):
 
 def main():
     load_dotenv()
+    comics_number = random.randint(1, 500)
     v = float(os.getenv('V'))
     client_id = int(os.getenv('CLIENT_ID'))
     access_token = os.getenv('ACCESS_TOKEN')
@@ -119,7 +119,7 @@ def main():
             print(e)
             print('Проверьте, указан ли ID и актуальная версия V в env')
     try:
-        comics = get_comics()
+        comics = get_comics(comics_number=comics_number)
         comics_text = comics['alt']
         comics_image_path = save_image_local(url=comics['img'],
                                              folder=img_folder,
