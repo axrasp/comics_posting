@@ -8,6 +8,14 @@ import requests
 from dotenv import load_dotenv
 
 
+def get_max_comics_number():
+    url = 'https://xkcd.com/info.0.json'
+    response = requests.get(url)
+    response.raise_for_status()
+    max_comics_number = response.json()['num']
+    return max_comics_number
+
+
 def get_comics(comics_number: int):
     url = f'https://xkcd.com/{comics_number}/info.0.json'
     response = requests.get(url)
@@ -90,7 +98,7 @@ def save_image_local(url: str, folder: str, filename: str):
 
 def main():
     load_dotenv()
-    comics_number = random.randint(1, 500)
+    comics_number = random.randint(1, get_max_comics_number())
     v = float(os.getenv('V'))
     client_id = int(os.getenv('CLIENT_ID'))
     access_token = os.getenv('ACCESS_TOKEN')
@@ -122,6 +130,7 @@ def main():
     except requests.exceptions.HTTPError as e:
         print(e)
         print('Комикс не найден')
+        os.remove(comics_image_path)
     try:
         upload_url = get_upload_url(token=access_token, group_id=group_id,
                                     v=v,
@@ -148,7 +157,8 @@ def main():
                             )
     except requests.exceptions.HTTPError as e:
         print(e)
-    os.remove(comics_image_path)
+    finally:
+        os.remove(comics_image_path)
 
 
 if __name__ == '__main__':
