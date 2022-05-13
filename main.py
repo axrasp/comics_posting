@@ -33,6 +33,11 @@ def get_implicit_token(client_id: int, v: float):
     return response.url
 
 
+def check_vk_status(vk_response):
+    if 'error' in vk_response:
+        raise requests.HTTPError(vk_response['error'])
+
+
 def get_upload_url(token: str, group_id: int, v: float, method_name: str):
     params = {
         'group_id': group_id,
@@ -42,6 +47,7 @@ def get_upload_url(token: str, group_id: int, v: float, method_name: str):
     url = f'https://api.vk.com/method/{method_name}'
     response = requests.get(url, params=params)
     response.raise_for_status()
+    check_vk_status(vk_response=response.json())
     return response.json()['response']['upload_url']
 
 
@@ -52,6 +58,7 @@ def send_image(url: str, image: str):
         }
         response = requests.post(url, files=files)
         response.raise_for_status()
+        check_vk_status(vk_response=response.json())
         return response.json()
 
 
@@ -69,6 +76,7 @@ def save_image_to_group(token: str, group_id: int,
     url = f'https://api.vk.com/method/{method_name}'
     response = requests.post(url, params=params)
     response.raise_for_status()
+    check_vk_status(vk_response=response.json())
     return response.json()
 
 
@@ -85,6 +93,7 @@ def post_image_to_group(token: str, group_id: int, v: float, method_name: str,
     }
     url = f'https://api.vk.com/method/{method_name}'
     response = requests.post(url, params=params)
+    check_vk_status(vk_response=response.json())
     response.raise_for_status()
 
 
