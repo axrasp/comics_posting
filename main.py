@@ -22,10 +22,7 @@ def get_implicit_token(client_id: int, v: float):
           f'&response_type=token&v={v}'
     response = requests.get(url)
     response.raise_for_status()
-    print('Перейдите по ссылке ниже, разрешите доступ приложению,'
-          'в ссылке ACCESS_TOKEN будет в параметре "&access_token=".'
-          ' Внесите его в .env и перезапустите скрипт без аргументов')
-    print(response.url)
+    return response.url
 
 
 def get_upload_url(token: str, group_id: int, v: float, method_name: str):
@@ -106,7 +103,10 @@ def main():
     args = parser.parse_args()
     if args.token == 'token':
         try:
-            get_implicit_token(client_id=int(client_id), v=float(v))
+            print(get_implicit_token(client_id=int(client_id), v=float(v)))
+            print('Перейдите по ссылке выше, разрешите доступ приложению,'
+                  'в ссылке ACCESS_TOKEN будет в параметре "&access_token=".'
+                  ' Внесите его в .env и перезапустите скрипт без аргументов')
             sys.exit()
         except requests.exceptions.HTTPError as e:
             print(e)
