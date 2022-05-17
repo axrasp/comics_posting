@@ -47,8 +47,9 @@ def get_upload_url(token: str, group_id: int, v: float, method_name: str):
     url = f'https://api.vk.com/method/{method_name}'
     response = requests.get(url, params=params)
     response.raise_for_status()
-    check_vk_status(vk_response=response.json())
-    return response.json()['response']['upload_url']
+    vk_response = response.json()
+    check_vk_status(vk_response=vk_response)
+    return vk_response['response']['upload_url']
 
 
 def send_image(url: str, image: str):
@@ -58,8 +59,9 @@ def send_image(url: str, image: str):
         }
         response = requests.post(url, files=files)
         response.raise_for_status()
-        check_vk_status(vk_response=response.json())
-        return response.json()
+        vk_response = response.json()
+        check_vk_status(vk_response=vk_response)
+        return vk_response
 
 
 def save_image_to_group(token: str, group_id: int,
@@ -134,17 +136,17 @@ def main():
         comics_image_path = save_image_local(
             url=comics['img'],
             folder=img_folder,
-            filename=get_comics(
-                comics_number=comics_number)['safe_title'])
+            filename=comics['safe_title']
+        )
     except requests.exceptions.HTTPError as e:
         print(e)
         print('Комикс не найден')
-        os.remove(comics_image_path)
     try:
-        upload_url = get_upload_url(token=access_token, group_id=group_id,
-                                    v=v,
-                                    method_name='photos.getWallUploadServer'
-                                    )
+        upload_url = get_upload_url(
+            token=access_token, group_id=group_id,
+            v=v,
+            method_name='photos.getWallUploadServer'
+        )
         photo_upload_params = send_image(
             url=upload_url,
             image=comics_image_path
@@ -162,8 +164,7 @@ def main():
                             method_name='wall.post',
                             photo_id=photo_uploaded['response'][0]['id'],
                             owner_id=photo_uploaded['response'][0]['owner_id'],
-                            message=comics_text
-                            )
+                            message=comics_text)
     except requests.exceptions.HTTPError as e:
         print(e)
     finally:
