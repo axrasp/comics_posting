@@ -78,8 +78,9 @@ def save_image_to_group(token: str, group_id: int,
     url = f'https://api.vk.com/method/{method_name}'
     response = requests.post(url, params=params)
     response.raise_for_status()
-    check_vk_status(vk_response=response.json())
-    return response.json()
+    vk_response = response.json()
+    check_vk_status(vk_response=vk_response)
+    return vk_response
 
 
 def post_image_to_group(token: str, group_id: int, v: float, method_name: str,
@@ -160,7 +161,9 @@ def main():
             server=photo_upload_params['server'],
             photo=photo_upload_params['photo']
         )
-        post_image_to_group(token=access_token, group_id=group_id, v=v,
+        post_image_to_group(token=access_token,
+                            group_id=group_id,
+                            v=v,
                             method_name='wall.post',
                             photo_id=photo_uploaded['response'][0]['id'],
                             owner_id=photo_uploaded['response'][0]['owner_id'],
