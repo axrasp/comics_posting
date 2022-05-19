@@ -83,8 +83,10 @@ def save_image_to_group(token: str, group_id: int,
     return vk_response
 
 
-def post_image_to_group(token: str, group_id: int, v: float, method_name: str,
-                        photo_id: int, owner_id: int, message: str):
+def post_image_to_group(token: str, group_id: int,
+                        v: float, method_name: str,
+                        photo_id: int, owner_id: int,
+                        message: str):
     params = {
         'group_id': group_id,
         'owner_id': f'-{group_id}',
@@ -144,7 +146,8 @@ def main():
         print('Комикс не найден')
     try:
         upload_url = get_upload_url(
-            token=access_token, group_id=group_id,
+            token=access_token,
+            group_id=group_id,
             v=v,
             method_name='photos.getWallUploadServer'
         )
@@ -161,13 +164,14 @@ def main():
             server=photo_upload_params['server'],
             photo=photo_upload_params['photo']
         )
-        post_image_to_group(token=access_token,
-                            group_id=group_id,
-                            v=v,
-                            method_name='wall.post',
-                            photo_id=photo_uploaded['response'][0]['id'],
-                            owner_id=photo_uploaded['response'][0]['owner_id'],
-                            message=comics_text)
+        post_image_to_group(
+            token=access_token,
+            group_id=group_id,
+            v=v,method_name='wall.post',
+            photo_id=photo_uploaded['response'][0]['id'],
+            owner_id=photo_uploaded['response'][0]['owner_id'],
+            message=comics_text
+        )
     except requests.exceptions.HTTPError as e:
         print(e)
     finally:
